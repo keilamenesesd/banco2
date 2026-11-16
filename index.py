@@ -8,14 +8,8 @@ class Mediator(ABC):
         pass
 
 
-class Card:
-    def __init__(self, titular: str, saldo: float = 0.0, numero: str | None = None):
-        self.titular = titular
-        self.saldo = saldo
-        self.numero = numero or self.gerar_numero()
-
-    @staticmethod
-    def gerar_numero() -> str:
+class GeradorNumero:
+    def gerar(self) -> str:
         base = [random.randint(0, 9) for _ in range(15)]
         soma = 0
 
@@ -29,6 +23,20 @@ class Card:
 
         fim = (10 - soma % 10) % 10
         return ''.join(str(d) for d in base + [fim])
+
+
+class Card:
+    def __init__(
+        self,
+        titular: str,
+        saldo: float = 0.0,
+        numero: str | None = None,
+        gerador=None,
+    ):
+        self.titular = titular
+        self.saldo = saldo
+        gerador = gerador or GeradorNumero()
+        self.numero = numero or gerador.gerar()
 
 
 
@@ -52,15 +60,16 @@ class ValidadorLuhn:
 
 
 class Banco(Mediator):
-    def __init__(self, validador=None):
+    def __init__(self, validador=None, gerador=None):
         self.cartoes = []
         self.validador = validador or ValidadorLuhn()
+        self.gerador = gerador or GeradorNumero()
 
     def cadastrar(self, cartao: Card):
         self.cartoes.append(cartao)
 
     def criar_cartao(self, titular: str, saldo: float = 0.0) -> Card:
-        cartao = Card(titular, saldo)
+        cartao = Card(titular, saldo, gerador=self.gerador)
         self.cadastrar(cartao)
         return cartao
 
