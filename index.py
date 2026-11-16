@@ -30,8 +30,11 @@ class Card:
         fim = (10 - soma % 10) % 10
         return ''.join(str(d) for d in base + [fim])
 
-    @staticmethod
-    def luhn(numero: str) -> bool:
+
+
+
+class ValidadorLuhn:
+    def validar(self, numero: str) -> bool:
         digs = [int(d) for d in str(numero) if d.isdigit()]
         if len(digs) < 12:
             return False
@@ -61,7 +64,7 @@ class Banco(Mediator):
         return cartao
 
     def validar_cartao(self, cartao: Card) -> bool:
-        if not Card.luhn(cartao.numero):
+        if not ValidadorLuhn().validar(cartao.numero):
             print(f'Banco: cartão {cartao.numero} inválido.')
             return False
 
@@ -90,7 +93,7 @@ class PinPad:
         self.banco = banco
 
     def pagar(self, cartao: Card, valor: float) -> bool:
-        if not Card.luhn(cartao.numero):
+        if not ValidadorLuhn().validar(cartao.numero):
             print('PinPad: cartão inválido.')
             return False
 
