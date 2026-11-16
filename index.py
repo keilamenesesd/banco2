@@ -52,8 +52,9 @@ class ValidadorLuhn:
 
 
 class Banco(Mediator):
-    def __init__(self):
+    def __init__(self, validador=None):
         self.cartoes = []
+        self.validador = validador or ValidadorLuhn()
 
     def cadastrar(self, cartao: Card):
         self.cartoes.append(cartao)
@@ -64,7 +65,7 @@ class Banco(Mediator):
         return cartao
 
     def validar_cartao(self, cartao: Card) -> bool:
-        if not ValidadorLuhn().validar(cartao.numero):
+        if not self.validador.validar(cartao.numero):
             print(f'Banco: cartão {cartao.numero} inválido.')
             return False
 
