@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class Mediator(ABC):
     @abstractmethod
-    def validar_cartao(self, cartao: 'Card') -> bool:
+    def processar(self, cartao: 'Card', valor: float) -> bool:
         pass
 
 
@@ -74,7 +74,7 @@ class Banco(Mediator):
 
         return True
 
-    def pagar(self, cartao: Card, valor: float) -> bool:
+    def processar(self, cartao: Card, valor: float) -> bool:
         if not self.validar_cartao(cartao):
             print('Banco: pagamento recusado.')
             return False
@@ -89,15 +89,11 @@ class Banco(Mediator):
 
 
 class PinPad:
-    def __init__(self, banco: Banco):
-        self.banco = banco
+    def __init__(self, med: Mediator):
+        self.med = med
 
     def pagar(self, cartao: Card, valor: float) -> bool:
-        if not ValidadorLuhn().validar(cartao.numero):
-            print('PinPad: cartão inválido.')
-            return False
-
-        return self.banco.pagar(cartao, valor)
+        return self.med.processar(cartao, valor)
 
 
 class Cliente:
